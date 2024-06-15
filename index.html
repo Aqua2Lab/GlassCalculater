@@ -4,15 +4,74 @@
     <title>Aquarium Specifications</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            margin: 20px 0;
+        }
+        h1 {
+            color: #007BFF;
+            text-align: center;
         }
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         .form-group label {
             display: block;
             margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .form-group input[type="checkbox"] {
+            width: auto;
+        }
+        .form-group select {
+            appearance: none;
+        }
+        .form-group p {
+            margin: 5px 0;
+            font-size: 0.9em;
+            color: #555;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #output {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e9f7ff;
+            border-left: 4px solid #007BFF;
+            border-radius: 5px;
         }
     </style>
     <script>
@@ -102,71 +161,73 @@
     </script>
 </head>
 <body>
-    <h1>Aquarium Specifications</h1>
-    <div class="form-group">
-        <label for="unit">Unit:</label>
-        <select id="unit">
-            <option value="inches">Inches</option>
-            <option value="cm">Centimeters</option>
-        </select>
+    <div class="container">
+        <h1>Aquarium Specifications</h1>
+        <div class="form-group">
+            <label for="unit">Unit:</label>
+            <select id="unit">
+                <option value="inches">Inches</option>
+                <option value="cm">Centimeters</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="length">Length (left to right):</label>
+            <input type="number" id="length" required oninput="updateSuggestedThickness()">
+        </div>
+        <div class="form-group">
+            <label for="height">Height (bottom to top):</label>
+            <input type="number" id="height" required oninput="updateSuggestedThickness()">
+        </div>
+        <div class="form-group">
+            <label for="depth">Depth (back to front):</label>
+            <input type="number" id="depth" required>
+        </div>
+        <div class="form-group">
+            <label for="lid">Do you want a glass lid?</label>
+            <input type="checkbox" id="lid" onchange="document.getElementById('lidGlassType').disabled = !this.checked;">
+        </div>
+        <div class="form-group">
+            <label for="glassWidth">Glass Thickness (mm):</label>
+            <select id="glassWidth" required>
+                <option value="6">6 mm</option>
+                <option value="8">8 mm</option>
+                <option value="10">10 mm</option>
+                <option value="12">12 mm</option>
+                <option value="15">15 mm</option>
+                <option value="18">18 mm</option>
+            </select>
+            <p id="suggestedThickness"></p>
+        </div>
+        <div class="form-group">
+            <label for="frontGlassType">Front Glass Type:</label>
+            <select id="frontGlassType">
+                <option value="extraClear">Extra Clear</option>
+                <option value="normal">Normal</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="sideGlassType">Side Glass Type:</label>
+            <select id="sideGlassType">
+                <option value="extraClear">Extra Clear</option>
+                <option value="normal">Normal</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="bottomGlassType">Bottom Glass Type:</label>
+            <select id="bottomGlassType">
+                <option value="extraClear">Extra Clear</option>
+                <option value="normal">Normal</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="lidGlassType">Lid Glass Type:</label>
+            <select id="lidGlassType" disabled>
+                <option value="extraClear">Extra Clear</option>
+                <option value="normal">Normal</option>
+            </select>
+        </div>
+        <button onclick="calculate()">Calculate</button>
+        <div id="output"></div>
     </div>
-    <div class="form-group">
-        <label for="length">Length (left to right):</label>
-        <input type="number" id="length" required oninput="updateSuggestedThickness()">
-    </div>
-    <div class="form-group">
-        <label for="height">Height (bottom to top):</label>
-        <input type="number" id="height" required oninput="updateSuggestedThickness()">
-    </div>
-    <div class="form-group">
-        <label for="depth">Depth (back to front):</label>
-        <input type="number" id="depth" required>
-    </div>
-    <div class="form-group">
-        <label for="lid">Do you want a glass lid?</label>
-        <input type="checkbox" id="lid" onchange="document.getElementById('lidGlassType').disabled = !this.checked;">
-    </div>
-    <div class="form-group">
-        <label for="glassWidth">Glass Thickness (mm):</label>
-        <select id="glassWidth" required>
-            <option value="6">6 mm</option>
-            <option value="8">8 mm</option>
-            <option value="10">10 mm</option>
-            <option value="12">12 mm</option>
-            <option value="15">15 mm</option>
-            <option value="18">18 mm</option>
-        </select>
-        <p id="suggestedThickness"></p>
-    </div>
-    <div class="form-group">
-        <label for="frontGlassType">Front Glass Type:</label>
-        <select id="frontGlassType">
-            <option value="extraClear">Extra Clear</option>
-            <option value="normal">Normal</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label for="sideGlassType">Side Glass Type:</label>
-        <select id="sideGlassType">
-            <option value="extraClear">Extra Clear</option>
-            <option value="normal">Normal</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label for="bottomGlassType">Bottom Glass Type:</label>
-        <select id="bottomGlassType">
-            <option value="extraClear">Extra Clear</option>
-            <option value="normal">Normal</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label for="lidGlassType">Lid Glass Type:</label>
-        <select id="lidGlassType" disabled>
-            <option value="extraClear">Extra Clear</option>
-            <option value="normal">Normal</option>
-        </select>
-    </div>
-    <button onclick="calculate()">Calculate</button>
-    <div id="output"></div>
 </body>
 </html>
