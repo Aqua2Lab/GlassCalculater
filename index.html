@@ -11,6 +11,8 @@
             padding: 0;
             display: flex;
             justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
         }
         .container {
             background-color: #fff;
@@ -19,7 +21,7 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 600px;
-            margin: 20px 0;
+            margin: 20px;
         }
         h1 {
             color: #007BFF;
@@ -114,34 +116,42 @@
                 lid: lid ? document.getElementById('lidGlassType').value : null
             };
 
-            var frontBackGlassArea = 2 * ((length * height) / 144);  // in square feet
-            var sideGlassArea = 2 * ((depth * height) / 144);  // in square feet
-            var bottomGlassArea = (length * depth) / 144;  // in square feet
-            var lidGlassArea = lid ? (length * depth) / 144 : 0;  // in square feet
+            // Convert dimensions to feet for calculation and round up to the nearest foot
+            length = unit === 'cm' ? Math.ceil(length / 30.48) : Math.ceil(length / 12);
+            height = unit === 'cm' ? Math.ceil(height / 30.48) : Math.ceil(height / 12);
+            depth = unit === 'cm' ? Math.ceil(depth / 30.48) : Math.ceil(depth / 12);
 
+            // Calculate area in square feet
+            var frontBackGlassArea = 2 * (length * height);  // in square feet
+            var sideGlassArea = 2 * (depth * height);  // in square feet
+            var bottomGlassArea = (length * depth);  // in square feet
+            var lidGlassArea = lid ? (length * depth) : 0;  // in square feet
+
+            // Calculate costs
             var frontBackGlassCost = frontBackGlassArea * glassRates[glassWidth][glassTypes.front];
             var sideGlassCost = sideGlassArea * glassRates[glassWidth][glassTypes.sides];
             var bottomGlassCost = bottomGlassArea * glassRates[glassWidth][glassTypes.bottom];
             var lidGlassCost = lid ? lidGlassArea * glassRates[glassWidth][glassTypes.lid] : 0;
 
+            // Sum up total area and cost
             var totalGlassArea = frontBackGlassArea + sideGlassArea + bottomGlassArea + lidGlassArea;  // in square feet
             var totalCost = frontBackGlassCost + sideGlassCost + bottomGlassCost + lidGlassCost;
 
             document.getElementById('output').innerHTML = `
                 <h3>Calculation Results</h3>
                 <p><strong>Total Glass Area:</strong> ${totalGlassArea.toFixed(2)} square feet</p>
-                <p><strong>Front and Back Glass Size:</strong> ${length} x ${height} ${unit}</p>
+                <p><strong>Front and Back Glass Size:</strong> ${length * 12} x ${height * 12} ${unit}</p>
                 <p><strong>Front and Back Glass Type:</strong> ${glassTypes.front.charAt(0).toUpperCase() + glassTypes.front.slice(1)}</p>
-                <p><strong>Front and Back Glass Cost:</strong> ₹${frontBackGlassCost.toFixed(2)}</p>
-                <p><strong>Side Glass Size:</strong> ${depth} x ${height} ${unit}</p>
+                <p><strong>Front and Back Glass Cost:</strong> ₹${frontBackGlassCost.toFixed(2)} (₹${glassRates[glassWidth][glassTypes.front]} per sq. ft.)</p>
+                <p><strong>Side Glass Size:</strong> ${depth * 12} x ${height * 12} ${unit}</p>
                 <p><strong>Side Glass Type:</strong> ${glassTypes.sides.charAt(0).toUpperCase() + glassTypes.sides.slice(1)}</p>
-                <p><strong>Side Glass Cost:</strong> ₹${sideGlassCost.toFixed(2)}</p>
-                <p><strong>Bottom Glass Size:</strong> ${length} x ${depth} ${unit}</p>
+                <p><strong>Side Glass Cost:</strong> ₹${sideGlassCost.toFixed(2)} (₹${glassRates[glassWidth][glassTypes.sides]} per sq. ft.)</p>
+                <p><strong>Bottom Glass Size:</strong> ${length * 12} x ${depth * 12} ${unit}</p>
                 <p><strong>Bottom Glass Type:</strong> ${glassTypes.bottom.charAt(0).toUpperCase() + glassTypes.bottom.slice(1)}</p>
-                <p><strong>Bottom Glass Cost:</strong> ₹${bottomGlassCost.toFixed(2)}</p>
-                ${lid ? `<p><strong>Lid Glass Size:</strong> ${length} x ${depth} ${unit}</p>` : ''}
+                <p><strong>Bottom Glass Cost:</strong> ₹${bottomGlassCost.toFixed(2)} (₹${glassRates[glassWidth][glassTypes.bottom]} per sq. ft.)</p>
+                ${lid ? `<p><strong>Lid Glass Size:</strong> ${length * 12} x ${depth * 12} ${unit}</p>` : ''}
                 ${lid ? `<p><strong>Lid Glass Type:</strong> ${glassTypes.lid.charAt(0).toUpperCase() + glassTypes.lid.slice(1)}</p>` : ''}
-                ${lid ? `<p><strong>Lid Glass Cost:</strong> ₹${lidGlassCost.toFixed(2)}</p>` : ''}
+                ${lid ? `<p><strong>Lid Glass Cost:</strong> ₹${lidGlassCost.toFixed(2)} (₹${glassRates[glassWidth][glassTypes.lid]} per sq. ft.)</p>` : ''}
                 <p><strong>Total Cost:</strong> ₹${totalCost.toFixed(2)}</p>
             `;
         }
