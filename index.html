@@ -135,7 +135,13 @@
 
             // Sum up total area and cost
             var totalGlassArea = frontBackGlassArea + sideGlassArea + bottomGlassArea + lidGlassArea;  // in square feet
-            var totalCost = frontBackGlassCost + sideGlassCost + bottomGlassCost + lidGlassCost;
+            var totalGlassCost = frontBackGlassCost + sideGlassCost + bottomGlassCost + lidGlassCost;
+
+            // Calculate making cost (70% of total glass cost)
+            var makingCost = totalGlassCost * 0.70;
+
+            // Calculate final total cost
+            var finalTotalCost = totalGlassCost + makingCost;
 
             document.getElementById('output').innerHTML = `
                 <h3>Calculation Results</h3>
@@ -152,7 +158,9 @@
                 ${lid ? `<p><strong>Lid Glass Size:</strong> ${length * 12} x ${depth * 12} ${unit}</p>` : ''}
                 ${lid ? `<p><strong>Lid Glass Type:</strong> ${glassTypes.lid.charAt(0).toUpperCase() + glassTypes.lid.slice(1)}</p>` : ''}
                 ${lid ? `<p><strong>Lid Glass Cost:</strong> ₹${lidGlassCost.toFixed(2)} (₹${glassRates[glassWidth][glassTypes.lid]} per sq. ft.)</p>` : ''}
-                <p><strong>Total Cost:</strong> ₹${totalCost.toFixed(2)}</p>
+                <p><strong>Total Glass Cost:</strong> ₹${totalGlassCost.toFixed(2)}</p>
+                <p><strong>Making Cost (70% of Total Glass Cost):</strong> ₹${makingCost.toFixed(2)}</p>
+                <p><strong>Final Total Cost:</strong> ₹${finalTotalCost.toFixed(2)}</p>
             `;
         }
 
