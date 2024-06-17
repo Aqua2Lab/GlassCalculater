@@ -77,15 +77,6 @@
         }
     </style>
     <script>
-        const glassRates = {
-            "6": { extraClear: 200, normal: 100 },
-            "8": { extraClear: 350, normal: 120 },
-            "10": { extraClear: 450, normal: 160 },
-            "12": { extraClear: 550, normal: 200 },
-            "15": { extraClear: 1600, normal: 450 },
-            "18": { extraClear: 2200 }
-        };
-
         function suggestGlassThickness(length, height) {
             if (length <= 24 && height <= 15) {
                 return "6"; // mm for smaller tanks
@@ -103,8 +94,10 @@
             var depth = parseFloat(document.getElementById('depth').value);
             var lid = document.getElementById('lid').checked;
             var glassWidth = document.getElementById('glassWidth').value;
+            var extraClearCost = parseFloat(document.getElementById('extraClearCost').value);
+            var normalCost = parseFloat(document.getElementById('normalCost').value);
             
-            if (isNaN(length) || isNaN(height) || isNaN(depth)) {
+            if (isNaN(length) || isNaN(height) || isNaN(depth) || isNaN(extraClearCost) || isNaN(normalCost)) {
                 alert("Please enter valid numerical values.");
                 return;
             }
@@ -127,11 +120,17 @@
             var bottomGlassArea = (length * depth);  // in square feet
             var lidGlassArea = lid ? (length * depth) : 0;  // in square feet
 
+            // Determine glass cost based on type
+            var glassRate = {
+                "extraClear": extraClearCost,
+                "normal": normalCost
+            };
+
             // Calculate costs
-            var frontBackGlassCost = frontBackGlassArea * glassRates[glassWidth][glassTypes.front];
-            var sideGlassCost = sideGlassArea * glassRates[glassWidth][glassTypes.sides];
-            var bottomGlassCost = bottomGlassArea * glassRates[glassWidth][glassTypes.bottom];
-            var lidGlassCost = lid ? lidGlassArea * glassRates[glassWidth][glassTypes.lid] : 0;
+            var frontBackGlassCost = frontBackGlassArea * glassRate[glassTypes.front];
+            var sideGlassCost = sideGlassArea * glassRate[glassTypes.sides];
+            var bottomGlassCost = bottomGlassArea * glassRate[glassTypes.bottom];
+            var lidGlassCost = lid ? lidGlassArea * glassRate[glassTypes.lid] : 0;
 
             // Sum up total area and cost
             var totalGlassArea = frontBackGlassArea + sideGlassArea + bottomGlassArea + lidGlassArea;  // in square feet
@@ -148,16 +147,16 @@
                 <p><strong>Total Glass Area:</strong> ${totalGlassArea.toFixed(2)} square feet</p>
                 <p><strong>Front and Back Glass Size:</strong> ${length * 12} x ${height * 12} ${unit}</p>
                 <p><strong>Front and Back Glass Type:</strong> ${glassTypes.front.charAt(0).toUpperCase() + glassTypes.front.slice(1)}</p>
-                <p><strong>Front and Back Glass Cost:</strong> ₹${frontBackGlassCost.toFixed(2)} (₹${glassRates[glassWidth][glassTypes.front]} per sq. ft.)</p>
+                <p><strong>Front and Back Glass Cost:</strong> ₹${frontBackGlassCost.toFixed(2)} (₹${glassRate[glassTypes.front]} per sq. ft.)</p>
                 <p><strong>Side Glass Size:</strong> ${depth * 12} x ${height * 12} ${unit}</p>
                 <p><strong>Side Glass Type:</strong> ${glassTypes.sides.charAt(0).toUpperCase() + glassTypes.sides.slice(1)}</p>
-                <p><strong>Side Glass Cost:</strong> ₹${sideGlassCost.toFixed(2)} (₹${glassRates[glassWidth][glassTypes.sides]} per sq. ft.)</p>
+                <p><strong>Side Glass Cost:</strong> ₹${sideGlassCost.toFixed(2)} (₹${glassRate[glassTypes.sides]} per sq. ft.)</p>
                 <p><strong>Bottom Glass Size:</strong> ${length * 12} x ${depth * 12} ${unit}</p>
                 <p><strong>Bottom Glass Type:</strong> ${glassTypes.bottom.charAt(0).toUpperCase() + glassTypes.bottom.slice(1)}</p>
-                <p><strong>Bottom Glass Cost:</strong> ₹${bottomGlassCost.toFixed(2)} (₹${glassRates[glassWidth][glassTypes.bottom]} per sq. ft.)</p>
+                <p><strong>Bottom Glass Cost:</strong> ₹${bottomGlassCost.toFixed(2)} (₹${glassRate[glassTypes.bottom]} per sq. ft.)</p>
                 ${lid ? `<p><strong>Lid Glass Size:</strong> ${length * 12} x ${depth * 12} ${unit}</p>` : ''}
                 ${lid ? `<p><strong>Lid Glass Type:</strong> ${glassTypes.lid.charAt(0).toUpperCase() + glassTypes.lid.slice(1)}</p>` : ''}
-                ${lid ? `<p><strong>Lid Glass Cost:</strong> ₹${lidGlassCost.toFixed(2)} (₹${glassRates[glassWidth][glassTypes.lid]} per sq. ft.)</p>` : ''}
+                ${lid ? `<p><strong>Lid Glass Cost:</strong> ₹${lidGlassCost.toFixed(2)} (₹${glassRate[glassTypes.lid]} per sq. ft.)</p>` : ''}
                 <p><strong>Total Glass Cost:</strong> ₹${totalGlassCost.toFixed(2)}</p>
                 <p><strong>Making Cost (70% of Total Glass Cost):</strong> ₹${makingCost.toFixed(2)}</p>
                 <p><strong>Final Total Cost:</strong> ₹${finalTotalCost.toFixed(2)}</p>
@@ -243,6 +242,14 @@
                 <option value="extraClear">Extra Clear</option>
                 <option value="normal">Normal</option>
             </select>
+        </div>
+        <div class="form-group">
+            <label for="extraClearCost">Cost per sq. ft. for Extra Clear Glass of the chosen thickness:</label>
+            <input type="number" id="extraClearCost" required>
+        </div>
+        <div class="form-group">
+            <label for="normalCost">Cost per sq. ft. for Normal Glass of the chosen thickness:</label>
+            <input type="number" id="normalCost" required>
         </div>
         <button onclick="calculate()">Calculate</button>
         <div id="output"></div>
